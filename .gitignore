@@ -1,0 +1,9 @@
+!.gitignore
+*.ipynb
+*.npy
+*.h5
+.*
+tardis_02bo_kurucz.yml
+tardis_example.yml
+yeganer_example.yml
+

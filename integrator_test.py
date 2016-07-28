@@ -17,23 +17,15 @@ mc_L_lam = tar.runner.spectrum_virtual.luminosity_density_lambda
 in_L_nu = tar.runner.L_nu
 in_L_lam = co.c.to("Angstrom/s")/lam**2 * in_L_nu
 
-upper_level_index = tar.atom_data.lines.set_index(['atomic_number', 'ion_number', 'level_number_upper']).index.copy()
-e_dot_lu          = pd.DataFrame(tar.runner.Edotlu, index=upper_level_index)
-e_dot_u           = e_dot_lu.groupby(level=[0, 1, 2]).sum()
-e_dot_u.index.names = ['atomic_number', 'ion_number', 'source_level_number'] # To make the q_ul e_dot_u product work, could be cleaner
-transitions       = tar.atom_data.macro_atom_data[tar.atom_data.macro_atom_data.transition_type == -1].copy()
-transitions_index = transitions.set_index(['atomic_number', 'ion_number', 'source_level_number']).index.copy()
-tmp  = tar.plasma.transition_probabilities[(tar.atom_data.macro_atom_data.transition_type == -1).values]
-q_ul = tmp.set_index(transitions_index)
-wave = tar.atom_data.lines.wavelength_cm[transitions.transition_line_id].values.reshape(-1,1)
-
-
 if True:
     print "Integrator Luminosity {:.6e}".format(np.trapz(in_L_nu*un.erg,freq.cgs))
     print "MC         Luminosity {:.6e}".format(np.trapz(mc_L_nu.cgs,freq.cgs) )
     pl.plot(lam,in_L_lam,label="Source")
     pl.plot(lam,mc_L_lam,label="MC")
-    pl.ylim(0,6e38)
+    pl.xlabel(u"A")
+    pl.ylabel("erg/A/s")
+    pl.title("Comparison")
+    pl.ylim(0,4e38)
     pl.legend(loc="best")
     pl.show()
 
@@ -57,7 +49,7 @@ def complot():
     p200lam = np.load("200plam.npy")
 
     lam     = np.load("lam.npy")
-    mc_L_lam = np.load("MClam.npy")    
+    mc_L_lam = np.load("MClam.npy")
 
     pl.plot(lam,p10lam,label="10 p")
     pl.plot(lam,p20lam,label="20 p")
@@ -71,7 +63,7 @@ def complot():
     pl.ylabel("erg/A/s")
     pl.title("Comparison")
 
-    pl.ylim(0,6e38)
+    pl.ylim(0,3.7e38)
     pl.legend(loc="best")
     pl.show()
 
@@ -98,3 +90,27 @@ def summary():
         pl.title(labels[i])
         pl.legend(loc="best")
         pl.show()
+
+
+def lam_vary_summary():
+    lam05  = np.load("lam.npy")
+    lam15  = np.load("1500lam.npy")
+    lam55  = np.load("5500lam.npy")
+    lam100 = np.load("10000lam.npy")
+    int05  = np.load("20plam.npy")
+    int15  = np.load("1500lam20p.npy")
+    int55  = np.load("5500lam20p.npy")
+    int100 = np.load("10000lam20p.npy")
+
+    lams = [lam05, lam15, lam55, lam100]
+    ints = [int05, int15, int55, int100]
+    labels = ["500 lambda", "1.5k lambda","5.5k lambda","100k lambda"]
+
+    for i,(lam,src) in enumerate(zip(lams,ints)):
+        pl.plot(lam,src,label=labels[i])
+    pl.ylim(0,4e38)
+    pl.xlabel(u"A")
+    pl.ylabel("erg/A/s")
+    pl.title("Varying number of wavelengths")
+    pl.legend(loc="best")
+    pl.show()
