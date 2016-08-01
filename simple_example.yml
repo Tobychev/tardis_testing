@@ -13,7 +13,9 @@ model:
             stop : 20000 km/s
             num: 1
         density:
-            type : branch85_w7
+#            type : branch85_w7
+            type : uniform
+            value : 7.87980300e-15 g/cm^3
     abundances:
         type: uniform
         H:  1.0
@@ -42,7 +44,7 @@ montecarlo:
         start: 1 angstrom
         stop: 1000000 angstrom
         num: 1.e+6
-    last_no_of_packets: 2.e+5
+    last_no_of_packets: 2.e+6
     no_of_virtual_packets: 20
 
     convergence_strategy:

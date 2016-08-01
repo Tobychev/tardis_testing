@@ -6,9 +6,13 @@ import numpy as np
 
 import tardis
 
-tar = tardis.run_tardis("simple_example.yml")
-#tar = tardis.run_tardis("tardis_example.yml")
+def ratiocompare():
+    pl.plot(lam,in_L_lam/mc_L_lam)
+    pl.xlabel(u"A")
+    pl.title("Ratio")
+    pl.show()
 
+tar = tardis.run_tardis("simple_example.yml")
 
 freq = tar.runner.spectrum.frequency
 lam  = tar.runner.spectrum_virtual.wavelength
@@ -27,18 +31,22 @@ if True:
     print "Integrator Luminosity {:.6e}".format(np.trapz(in_L_nu*un.erg,freq.cgs))
     print "MC         Luminosity {:.6e}".format(np.trapz(mc_L_nu.cgs,freq.cgs) )
     print "BB         Luminosity {:.6e}".format(np.trapz(Lbb_nu*un.erg,freq.cgs))
+    ratiocompare()
+
+def saveit(name):
+    saved = {"lam":lam.value,"mc_L_lam":mc_L_lam.value,"in_L_lam":in_L_lam.value}
+    np.savez(name,**saved)
+
+
+def compare():
     pl.plot(lam,in_L_lam,label="Source")
-    pl.plot(lam,mc_L_lam,label="MC")
+    pl.step(lam,mc_L_lam,label="MC")
     pl.xlabel(u"A")
     pl.ylabel("erg/A/s")
     pl.title("Comparison")
     pl.ylim(0,4e38)
     pl.legend(loc="best")
     pl.show()
-
-def saveit(name):
-    saved = {"lam":lam.value,"mc_L_lam":mc_L_lam.value,"in_L_lam":in_L_lam.value}
-    np.savez(name,**saved)
 
 def plot_srcfun(mdl):
     sel = mdl.runner.wave[:,0].argsort()
@@ -166,4 +174,3 @@ def BBnorm():
     pl.legend(loc="best")
     pl.ylim(0,2)
     pl.show()
-    
