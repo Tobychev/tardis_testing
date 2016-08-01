@@ -1,8 +1,10 @@
 *.ipynb
 *.npy
+*.npz
 *.h5
 .*
 tardis_02bo_kurucz.yml
 tardis_example.yml
 yeganer_example.yml
 
+!.gitignore

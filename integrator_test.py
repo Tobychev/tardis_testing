@@ -9,6 +9,7 @@ import tardis
 tar = tardis.run_tardis("simple_example.yml")
 #tar = tardis.run_tardis("tardis_example.yml")
 
+
 freq = tar.runner.spectrum.frequency
 lam  = tar.runner.spectrum_virtual.wavelength
 mc_L_nu = tar.runner.spectrum_virtual.luminosity_density_nu
@@ -16,10 +17,16 @@ mc_L_lam = tar.runner.spectrum_virtual.luminosity_density_lambda
 
 in_L_nu = tar.runner.L_nu
 in_L_lam = co.c.to("Angstrom/s")/lam**2 * in_L_nu
+BB = tardis.util.intensity_black_body(tar.runner.spectrum_virtual.frequency,6416)
+Fnu = BB*np.pi
+Lbb_nu = 4*np.pi*tar.runner.r_inner_cgs.min()**2 * Fnu
+Lbb_lam = Lbb_nu * co.c.to("Angstrom/s")/lam**2 
+
 
 if True:
     print "Integrator Luminosity {:.6e}".format(np.trapz(in_L_nu*un.erg,freq.cgs))
     print "MC         Luminosity {:.6e}".format(np.trapz(mc_L_nu.cgs,freq.cgs) )
+    print "BB         Luminosity {:.6e}".format(np.trapz(Lbb_nu*un.erg,freq.cgs))
     pl.plot(lam,in_L_lam,label="Source")
     pl.plot(lam,mc_L_lam,label="MC")
     pl.xlabel(u"A")
@@ -28,6 +35,10 @@ if True:
     pl.ylim(0,4e38)
     pl.legend(loc="best")
     pl.show()
+
+def saveit(name):
+    saved = {"lam":lam.value,"mc_L_lam":mc_L_lam.value,"in_L_lam":in_L_lam.value}
+    np.savez(name,**saved)
 
 def plot_srcfun(mdl):
     sel = mdl.runner.wave[:,0].argsort()
@@ -39,7 +50,6 @@ def plot_srcfun(mdl):
     pl.ylim(0,1e-3)    
     pl.xlabel("A")
     pl.show()
-
 
 def complot():
     p10lam = np.load("10plam.npy")
@@ -67,7 +77,6 @@ def complot():
     pl.legend(loc="best")
     pl.show()
 
-
 def summary():
     lam      = np.load("lam.npy")
     mc_L_lam = np.load("MClam.npy")  
@@ -91,7 +100,6 @@ def summary():
         pl.legend(loc="best")
         pl.show()
 
-
 def lam_vary_summary():
     lam05  = np.load("lam.npy")
     lam15  = np.load("1500lam.npy")
@@ -114,3 +122,48 @@ def lam_vary_summary():
     pl.title("Varying number of wavelengths")
     pl.legend(loc="best")
     pl.show()
+
+def lam_p_vary_summary():
+    fnames = ["10p15clam","20p15clam","50p15clam","100p15clam","200p15clam","20pr55clam","200pr55clam",]
+
+    for fil in fnames:
+        dat = np.load(fil+".npz")
+        pl.semilogy(dat["lam"],dat["in_L_lam"],label=fil)
+    pl.semilogy(dat["lam"],dat["mc_L_lam"],label="MC")
+    pl.xlabel("A")
+    pl.ylabel("erg/A/s")
+    pl.title("Varying number of wavelengths and ps")
+    pl.legend(loc="best")
+    pl.show()
+
+def lam_p_vary_20():
+    dat15 = np.load("20pr55clam.npz")
+    dat55 = np.load("200pr55clam.npz")
+    pl.plot(dat15["lam"],dat15["in_L_lam"],label="20p 5500 lam")
+    pl.plot(dat55["lam"],dat55["in_L_lam"],label="200p 5500 lam")
+    pl.xlabel("A")
+    pl.ylabel("erg/A/s")
+    pl.title("Varying number of wavelengths and ps")
+    pl.legend(loc="best")
+    pl.show()
+
+def BBcomp():
+    pl.plot(lam,in_L_lam,label="Source")
+    pl.plot(lam,mc_L_lam,label="MC")
+    pl.plot(lam,Lbb_lam,label="BB")
+    pl.ylabel("erg/A/s")
+    pl.xlabel(u"A")
+    pl.title("Comparison")
+    pl.legend(loc="best")
+    pl.show()
+
+def BBnorm():
+    pl.plot(lam,in_L_lam/Lbb_lam,label="Source")
+    pl.plot(lam,mc_L_lam/Lbb_lam,label="MC")
+    pl.ylabel("erg/A/s")
+    pl.xlabel(u"A")
+    pl.title("Comparison")
+    pl.legend(loc="best")
+    pl.ylim(0,2)
+    pl.show()
+    

@@ -1,49 +1,19 @@
-#New configuration for TARDIS based on YAML
-#IMPORTANT any pure floats need to have a +/- after the e e.g. 2e+5
-#Hopefully pyyaml will fix this soon.
----
-#Currently only simple1d is allowed
 tardis_config_version: v1.0
 supernova:
     luminosity_requested: 9.44 log_lsun
     time_explosion: 13 day
-#    distance : 24.2 Mpc
-
 
 atom_data: kurucz_cd23_chianti_H_He.h5
 
 model:
-        
-    
     structure:
         type: specific
-
-
         velocity:
             start : 1.1e4 km/s
             stop : 20000 km/s
             num: 1
-        
-        
         density:
-            #showing different configuration options separated by comments
-            #simple uniform:
-            #---------------
-            #type : uniform
-            #value : 1e-40 g/cm^3
-            #---------------
-
-            #branch85_w7 - fit of seven order polynomial to W7 (like Branch 85):
-            #---------------
             type : branch85_w7
-            
-            # default, no need to change!
-            #time_0 : 19.9999584 s
-            # default, no need to change!
-            #density_coefficient : 3e29 
-            #---------------
-                
-    
     abundances:
         type: uniform
         H:  1.0
@@ -54,18 +24,14 @@ model:
         S:  0.0
         Ar: 0.0
         Ca: 0.0
-                
 plasma:
     initial_t_inner: 6416 K
     initial_t_rad:  6416 K
     disable_electron_scattering: yes
     ionization: lte
     excitation: lte
-    #radiative_rates_type - currently supported are lte, nebular and detailed
     radiative_rates_type: dilute-blackbody
-    #line interaction type - currently supported are scatter, downbranch and macroatom
     line_interaction_type: downbranch
-            
 
 montecarlo:
     seed: 23111963
@@ -90,19 +56,6 @@ montecarlo:
     
 
 spectrum:
-    start : 500 angstrom
-    stop : 20000 angstrom
-    num: 1500
-    
-
-
-
-    
-    
-
-
-
-    
-
-
-
+    start : 6000 angstrom
+    stop :  7000 angstrom
+    num: 500
