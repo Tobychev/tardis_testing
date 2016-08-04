@@ -1,3 +1,4 @@
+import scipy.interpolate as intr
 import matplotlib.pyplot as pl
 import astropy.constants as co
 import astropy.units as un
@@ -37,6 +38,23 @@ def saveit(name):
     saved = {"lam":lam.value,"mc_L_lam":mc_L_lam.value,"in_L_lam":in_L_lam.value}
     np.savez(name,**saved)
 
+def pure_absorb_plot():
+    bins       = tar.runner.spectrum.wavelength[::-1]
+    noint_mask = tar.runner.virt_packet_last_interaction_type == -1
+    noint_lam  = (co.c.cgs / (tar.runner.virt_packet_nus[noint_mask] * un.Hz)).to("AA")
+    noint_ws   = tar.runner.virt_packet_energies[noint_mask] * un.erg / tar.time_of_simulation
+    Lnorm      = noint_ws[(noint_lam >= 6000 * un.AA)*(noint_lam<=7000 * un.AA)].sum()
+
+    pl.plot(lam,in_L_lam,label="Source",color="red")
+    ax  = pl.gca()
+    ret = ax.hist(noint_lam, weights=noint_ws, bins=bins, normed=True)
+    for reti in ret[-1]:
+        reti.set_facecolor("blue")
+        reti.set_edgecolor("blue")
+        reti.set_linewidth(0)
+        reti.set_height(reti.get_height() * Lnorm.value)
+    pl.plot(lam,in_L_lam,label="Source",color="red")
+    pl.show()
 
 def compare():
     pl.plot(lam,in_L_lam,label="Source")
@@ -166,11 +184,18 @@ def BBcomp():
     pl.show()
 
 def BBnorm():
+    an = np.loadtxt("analytic_solution.dat")
     pl.plot(lam,in_L_lam/Lbb_lam,label="Source")
     pl.plot(lam,mc_L_lam/Lbb_lam,label="MC")
+    pl.plot(an[:,0],an[:,1],label="Exact")
     pl.ylabel("erg/A/s")
     pl.xlabel(u"A")
     pl.title("Comparison")
     pl.legend(loc="best")
     pl.ylim(0,2)
     pl.show()
+
+def Hsellnorm():
+    an = np.loadtxt("analytic_solution.dat")
+    ex = intr.spline(an[:,0],an[:,1],lam)
+    pl.plot(lam,in_L_lam/ex)
