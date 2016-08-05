@@ -38,6 +38,10 @@ def saveit(name):
     saved = {"lam":lam.value,"mc_L_lam":mc_L_lam.value,"in_L_lam":in_L_lam.value}
     np.savez(name,**saved)
 
+def saverateio(name):
+    an = np.loadtxt("analytic_solution.dat")
+    np.save(name,in_L_lam.value/an[:,1]/Lbb_lam.value)
+
 def pure_absorb_plot():
     bins       = tar.runner.spectrum.wavelength[::-1]
     noint_mask = tar.runner.virt_packet_last_interaction_type == -1
@@ -197,5 +201,21 @@ def BBnorm():
 
 def Hsellnorm():
     an = np.loadtxt("analytic_solution.dat")
-    ex = intr.spline(an[:,0],an[:,1],lam)
-    pl.plot(lam,in_L_lam/ex)
+    pl.plot(lam,in_L_lam/an[:,1]/Lbb_lam)
+    pl.show()
+
+def geotest():
+    r1 = np.load("4sh40p.npy")
+    r2 = np.load("10sh40p.npy")
+    r3 = np.load("40sh40p.npy")
+    r4 = np.load("70sh40p.npy")
+    r5 = np.load("40sh100p.npy")
+    pl.plot(lam,r1,label="4 sh 40 p")
+    pl.plot(lam,r2,label="10 sh 40 p")
+    pl.plot(lam,r3,label="40 sh 40 p")
+    pl.plot(lam,r4,label="70 sh 40 p")
+    pl.plot(lam,r5,label="40 sh 100 p")
+    pl.xlabel(u"A")
+    pl.title("Comparison")
+    pl.legend(loc="best")
+    pl.show()
