@@ -43,11 +43,12 @@ def saverateio(name):
     np.save(name,in_L_lam.value/an[:,1]/Lbb_lam.value)
 
 def pure_absorb_plot():
+    lam_start,lam_end = tar.tardis_config.spectrum.start,tar.tardis_config.spectrum.end
     bins       = tar.runner.spectrum.wavelength[::-1]
     noint_mask = tar.runner.virt_packet_last_interaction_type == -1
     noint_lam  = (co.c.cgs / (tar.runner.virt_packet_nus[noint_mask] * un.Hz)).to("AA")
     noint_ws   = tar.runner.virt_packet_energies[noint_mask] * un.erg / tar.time_of_simulation
-    Lnorm      = noint_ws[(noint_lam >= 6000 * un.AA)*(noint_lam<=7000 * un.AA)].sum()
+    Lnorm      = noint_ws[(noint_lam >= lam_start)*(noint_lam<=lam_end)].sum()
 
     pl.plot(lam,in_L_lam,label="Source",color="red")
     ax  = pl.gca()
