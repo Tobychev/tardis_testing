@@ -4,7 +4,9 @@ supernova:
     time_explosion: 13 day
 
 #atom_data: kurucz_cd23_chianti_H_He.h5
-atom_data: h_alpha_p.h5
+#atom_data: h_alpha_p.h5
+#atom_data: test_H_8t3.h5
+atom_data: test_H_15t8.h5    
 
 model:
     structure:
@@ -45,7 +47,7 @@ montecarlo:
         start: 1 angstrom
         stop: 1000000 angstrom
         num: 1.e+6
-    last_no_of_packets: 2.e+6
+    last_no_of_packets: 2.e+5
     no_of_virtual_packets: 20
 
     convergence_strategy:
@@ -61,4 +63,4 @@ montecarlo:
 spectrum:
     start : 6000 angstrom
     stop :  7000 angstrom
-    num: 500
+    num: 1000
