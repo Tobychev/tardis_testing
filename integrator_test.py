@@ -189,10 +189,10 @@ def BBcomp():
     pl.show()
 
 def BBnorm():
-    an = np.loadtxt("analytic_solution.dat")
+#    an = np.loadtxt("analytic_solution.dat")
     pl.plot(lam,in_L_lam/Lbb_lam,label="Source")
     pl.plot(lam,mc_L_lam/Lbb_lam,label="MC")
-    pl.plot(an[:,0],an[:,1],label="Exact")
+#    pl.plot(an[:,0],an[:,1],label="Exact")
     pl.ylabel("erg/A/s")
     pl.xlabel(u"A")
     pl.title("Comparison")
