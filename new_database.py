@@ -33,14 +33,13 @@ def level_selection(locs,lines,levels,**kwargs):
 
 def macro_atom_selection(lines, levels, synpp_refs, ionization_data, macro_atom_data, macro_atom_references,**kwargs):
     sel = sorted(levels.level_number.values)[1:]
-    mcr_dat = macro_atom_data.loc[ macro_atom_data.source_level_number.isin(sel) 
-                                   & macro_atom_data.destination_level_number.isin(sel) ].copy()
+    mcr_dat = macro_atom_data.loc[macro_atom_data.transition_line_id.isin(lines.line_id)]
     mcr_ref = macro_atom_references.loc[ macro_atom_references.source_level_number.isin(sel) ].copy()
     
     for lev in sel:
         all,up = (mcr_dat.source_level_number == lev).sum(), ((mcr_dat.source_level_number == lev) & (mcr_dat.destination_level_number > lev)).sum() 
         mcr_ref.count_up.loc[mcr_ref.source_level_number == lev]    = up 
-        mcr_ref.count_down.loc[mcr_ref.source_level_number == lev]  = all - up
+        mcr_ref.count_down.loc[mcr_ref.source_level_number == lev]  = int((all - up)/2)
         mcr_ref.count_total.loc[mcr_ref.source_level_number == lev] = all
 
     dtypes = zip(macro_atom_references.dtypes.index, macro_atom_references.dtypes)
@@ -118,11 +117,11 @@ def save_to_H5(filename, zeta_data, atom_data, data_sources, lines, levels, synp
 frames = load_from_HDFstore(old_path)
 frm = species_selection(1,0,**frames)
 H = frm.copy()
-frm["lines"],frm["levels"] = level_selection([51],**frm)
+frm["lines"],frm["levels"] = level_selection([23,24,26,27],**frm)
 frm["macro_atom_data"],frm["macro_atom_references"] = macro_atom_selection(**frm)
 
 print "Creating database with following lines"
 print frm["lines"]
 
-save_to_H5("test_H_15t8.h5",**frm)
+save_to_H5("test_H_fourH_alpha.h5",**frm)
 
